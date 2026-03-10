@@ -17,17 +17,9 @@
 </p>
 
 <p align="center">
-  GitHub repository: <a href="https://github.com/web3daemon/tg-ai-assistant">web3daemon/tg-ai-assistant</a>
-</p>
-
-<p align="center">
   <a href="https://github.com/web3daemon/tg-ai-assistant/stargazers">
     <img src="https://img.shields.io/github/stars/web3daemon/tg-ai-assistant?style=social" alt="GitHub stars">
   </a>
-</p>
-
-<p align="center">
-  <img src="https://starchart.cc/web3daemon/tg-ai-assistant.svg" alt="Stargazers over time">
 </p>
 
 ---
