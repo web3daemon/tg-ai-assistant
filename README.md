@@ -1,5 +1,3 @@
-# tg-ai-assistant
-
 <p align="center">
   Private Telegram AI assistant with OpenRouter, SQLite memory, files, images, and voice support.
 </p>
