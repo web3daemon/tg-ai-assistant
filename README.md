@@ -17,17 +17,17 @@
 </p>
 
 <p align="center">
-  Replace <code>OWNER/REPO</code> below with your real GitHub repository path after publishing.
+  GitHub repository: <a href="https://github.com/web3daemon/tg-ai-assistant">web3daemon/tg-ai-assistant</a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/OWNER/REPO/stargazers">
-    <img src="https://img.shields.io/github/stars/OWNER/REPO?style=social" alt="GitHub stars">
+  <a href="https://github.com/web3daemon/tg-ai-assistant/stargazers">
+    <img src="https://img.shields.io/github/stars/web3daemon/tg-ai-assistant?style=social" alt="GitHub stars">
   </a>
 </p>
 
 <p align="center">
-  <img src="https://starchart.cc/OWNER/REPO.svg" alt="Stargazers over time">
+  <img src="https://starchart.cc/web3daemon/tg-ai-assistant.svg" alt="Stargazers over time">
 </p>
 
 ---
