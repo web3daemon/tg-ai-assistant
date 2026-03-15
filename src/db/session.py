@@ -1,10 +1,17 @@
 from pathlib import Path
 
-from sqlalchemy import Engine, create_engine, inspect, select, text
+from sqlalchemy import Engine, create_engine, inspect, text
 from sqlalchemy.orm import sessionmaker
 
 from src.config import settings
-from src.db.models import Base, SchemaMeta
+from src.db.models import (
+    BackgroundJobRecord,
+    Base,
+    ChatSettingsRecord,
+    ChatSummaryRecord,
+    JobArtifactRecord,
+    SchemaMeta,
+)
 
 
 Path(settings.sqlite_path).parent.mkdir(parents=True, exist_ok=True)
@@ -17,31 +24,47 @@ engine = create_engine(
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
 
-CURRENT_SCHEMA_VERSION = 2
+CURRENT_SCHEMA_VERSION = 6
 
 
 def init_db() -> None:
     Base.metadata.create_all(bind=engine)
     run_migrations(engine)
 
-def run_migrations(db_engine: Engine) -> None:
-    inspector = inspect(db_engine)
-    if "messages" not in inspector.get_table_names():
-        return
 
-    Base.metadata.create_all(bind=db_engine, tables=[SchemaMeta.__table__])
+def run_migrations(db_engine: Engine) -> None:
+    Base.metadata.create_all(
+        bind=db_engine,
+        tables=[
+            SchemaMeta.__table__,
+            BackgroundJobRecord.__table__,
+            ChatSummaryRecord.__table__,
+            ChatSettingsRecord.__table__,
+            JobArtifactRecord.__table__,
+        ],
+    )
+
+    inspector = inspect(db_engine)
     current_version = _get_schema_version(db_engine)
 
-    migrations: list[tuple[int, callable[[Engine], None]]] = [
-        (1, _migration_add_usage_columns),
-        (2, _migration_backfill_schema_meta),
-    ]
-    for version, migration in migrations:
-        if current_version >= version:
-            continue
-        migration(db_engine)
-        _set_schema_version(db_engine, version)
-        current_version = version
+    if "messages" in inspector.get_table_names():
+        migrations: list[tuple[int, callable[[Engine], None]]] = [
+            (1, _migration_add_usage_columns),
+            (2, _migration_backfill_schema_meta),
+            (3, _migration_create_background_jobs_table),
+            (4, _migration_create_chat_summaries_table),
+            (5, _migration_create_chat_settings_and_job_artifacts_tables),
+            (6, _migration_add_chat_mode_column),
+        ]
+        for version, migration in migrations:
+            if current_version >= version:
+                continue
+            migration(db_engine)
+            _set_schema_version(db_engine, version)
+            current_version = version
+
+    if current_version < CURRENT_SCHEMA_VERSION:
+        _set_schema_version(db_engine, CURRENT_SCHEMA_VERSION)
 
 
 def _migration_add_usage_columns(db_engine: Engine) -> None:
@@ -62,7 +85,32 @@ def _migration_add_usage_columns(db_engine: Engine) -> None:
 
 
 def _migration_backfill_schema_meta(db_engine: Engine) -> None:
-    _set_schema_version(db_engine, CURRENT_SCHEMA_VERSION)
+    _set_schema_version(db_engine, 2)
+
+
+def _migration_create_background_jobs_table(db_engine: Engine) -> None:
+    Base.metadata.create_all(bind=db_engine, tables=[BackgroundJobRecord.__table__])
+
+
+def _migration_create_chat_summaries_table(db_engine: Engine) -> None:
+    Base.metadata.create_all(bind=db_engine, tables=[ChatSummaryRecord.__table__])
+
+
+def _migration_create_chat_settings_and_job_artifacts_tables(db_engine: Engine) -> None:
+    Base.metadata.create_all(
+        bind=db_engine,
+        tables=[ChatSettingsRecord.__table__, JobArtifactRecord.__table__],
+    )
+
+
+def _migration_add_chat_mode_column(db_engine: Engine) -> None:
+    inspector = inspect(db_engine)
+    existing_columns = {column["name"] for column in inspector.get_columns("chat_settings")}
+    if "mode" in existing_columns:
+        return
+
+    with db_engine.begin() as connection:
+        connection.execute(text("ALTER TABLE chat_settings ADD COLUMN mode VARCHAR(32) DEFAULT 'chat'"))
 
 
 def _get_schema_version(db_engine: Engine) -> int:

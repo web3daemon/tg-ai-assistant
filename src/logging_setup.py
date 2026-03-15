@@ -1,7 +1,9 @@
 import logging
+import os
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
+from src.app_meta import APP_NAME, APP_VERSION
 from src.config import settings
 
 
@@ -14,7 +16,7 @@ def configure_logging() -> None:
     root_logger.handlers.clear()
 
     formatter = logging.Formatter(
-        fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+        fmt="%(asctime)s | %(levelname)s | %(name)s | pid=%(process)d | %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
@@ -31,3 +33,10 @@ def configure_logging() -> None:
 
     root_logger.addHandler(console_handler)
     root_logger.addHandler(file_handler)
+    root_logger.info(
+        "Logging configured | app=%s version=%s level=%s cwd=%s",
+        APP_NAME,
+        APP_VERSION,
+        settings.log_level.upper(),
+        os.getcwd(),
+    )

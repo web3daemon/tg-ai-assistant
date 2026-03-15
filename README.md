@@ -1,5 +1,6 @@
 <p align="center">
-  Private Telegram AI assistant with OpenRouter, SQLite memory, files, images, and voice support.
+  <strong>Gemini Telegram Copilot</strong><br>
+  Private Telegram AI assistant with OpenRouter, rolling memory, background jobs, modes, files, images, and voice support.
 </p>
 
 <p align="center">
@@ -14,101 +15,52 @@
   <img src="https://img.shields.io/badge/sqlite-memory-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite">
 </p>
 
-<p align="center">
-  <a href="https://github.com/web3daemon/tg-ai-assistant/stargazers">
-    <img src="https://img.shields.io/github/stars/web3daemon/tg-ai-assistant?style=social" alt="GitHub stars">
-  </a>
-</p>
-
----
-
 ## English
 
 ### Overview
 
-`tg-ai-assistant` is a private Telegram bot for personal use. It connects Telegram to AI models through OpenRouter and keeps persistent chat history in SQLite.
+`Gemini Telegram Copilot` is a private Telegram bot for personal or small allowlist usage. It connects Telegram to AI models through OpenRouter, stores chat history in SQLite, summarizes older context into rolling memory, and handles heavy multimodal tasks in the background.
 
-It is designed for local use first:
-- no VPS required
-- no webhook required
-- polling mode
-- strict single-user access control
+### Highlights
 
-### Features
-
-- private Telegram bot with whitelist access by `user_id` and `chat_id`
-- persistent SQLite chat memory
-- OpenRouter integration with model selection via `.env`
-- support for text, documents, images, voice messages, and audio files
-- local speech-to-text with `faster-whisper`
-- usage tracking for tokens and request cost
+- allowlist-based access control for one or more Telegram users and chats
+- text, documents, images, voice messages, and audio file support
+- background queue for heavy media processing
+- rolling memory: summary + recent messages
+- chat modes: `chat`, `summarize`, `translate`, `analyze`
+- mode-aware model routing with fallback models
+- usage tracking for tokens and estimated cost
 - chat export via `/export`
-- graceful shutdown and file logging with rotation
-- basic automated tests
-
-### Supported Content
-
-- text messages
-- `.txt`
-- `.pdf`
-- `.docx`
-- `.xlsx`
-- Telegram photos
-- image files
-- voice messages
-- audio files
+- inline menu and mode switching
+- rotating logs and automated tests
 
 ### Commands
 
-- `/start` — bot startup message
-- `/help` — available features
-- `/status` — current runtime settings
-- `/usage` — usage and cost summary
-- `/clear` — clear current chat history
-- `/export` — export current chat history to a text file
+- `/start` - onboarding message with quick actions
+- `/help` - feature overview
+- `/menu` - inline quick actions
+- `/mode` - switch mode
+- `/status` - runtime limits and active model
+- `/settings` - detailed runtime configuration
+- `/usage` - token and cost summary
+- `/clear` - clear current chat history
+- `/export` - export current chat history
 
-### Project Structure
+### Modes
 
-```text
-src/
-  bot/
-  db/
-  services/
-  utils/
-  config.py
-  logging_setup.py
-  main.py
-tests/
-requirements.txt
-.env.example
-```
+- `chat` - default assistant mode
+- `summarize` - compact summaries and action items
+- `translate` - translation-focused answers
+- `analyze` - structured analysis and recommendations
 
 ### Installation
 
 ```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
+python -m venv venv
+.\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
-
-Fill in your `.env` values:
-
-- `TELEGRAM_BOT_TOKEN`
-- `ALLOWED_TELEGRAM_USER_ID`
-- `ALLOWED_CHAT_ID`
-- `OPENROUTER_API_KEY`
-- `OPENROUTER_MODEL`
-
-Optional runtime tuning:
-
-- `MAX_FILE_SIZE_MB`
-- `MAX_EXTRACTED_TEXT_CHARS`
-- `LONG_RESPONSE_AS_FILE_THRESHOLD`
-- `WHISPER_MODEL_SIZE`
-- `WHISPER_DEVICE`
-- `WHISPER_COMPUTE_TYPE`
-- `MAX_AUDIO_DURATION_SECONDS`
 
 ### Run
 
@@ -122,101 +74,75 @@ python -m src.main
 .\venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-### Notes
-
-- The bot is optimized for private local usage.
-- The first `faster-whisper` run may download the speech model.
-- Some multimodal behavior depends on the selected OpenRouter model.
-
----
-
-## Russian
-
-### Описание
-
-`tg-ai-assistant` — это личный Telegram-бот для приватного использования. Он связывает Telegram с AI-моделями через OpenRouter и хранит постоянную историю диалога в SQLite.
-
-Проект изначально рассчитан на локальный запуск:
-- без VPS
-- без webhook
-- в режиме polling
-- с жестким доступом только для одного пользователя
-
-### Возможности
-
-- приватный Telegram-бот с whitelist-проверкой по `user_id` и `chat_id`
-- постоянная память диалога в SQLite
-- интеграция с OpenRouter и выбор модели через `.env`
-- поддержка текста, документов, изображений, голосовых сообщений и аудиофайлов
-- локальное распознавание речи через `faster-whisper`
-- учет токенов и стоимости запросов
-- экспорт истории через `/export`
-- корректное завершение работы и логирование в файл с ротацией
-- базовые автоматические тесты
-
-### Поддерживаемый контент
-
-- текстовые сообщения
-- `.txt`
-- `.pdf`
-- `.docx`
-- `.xlsx`
-- фото из Telegram
-- изображения как файлы
-- голосовые сообщения
-- аудиофайлы
-
-### Команды
-
-- `/start` — запуск бота
-- `/help` — справка и возможности
-- `/status` — текущие настройки
-- `/usage` — статистика по токенам и стоимости
-- `/clear` — очистка истории текущего чата
-- `/export` — выгрузка истории текущего чата в текстовый файл
-
-### Структура проекта
-
-```text
-src/
-  bot/
-  db/
-  services/
-  utils/
-  config.py
-  logging_setup.py
-  main.py
-tests/
-requirements.txt
-.env.example
-```
-
-### Установка
-
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-Copy-Item .env.example .env
-```
-
-Заполни `.env`:
+### Important `.env`
 
 - `TELEGRAM_BOT_TOKEN`
 - `ALLOWED_TELEGRAM_USER_ID`
 - `ALLOWED_CHAT_ID`
 - `OPENROUTER_API_KEY`
 - `OPENROUTER_MODEL`
+- `OPENROUTER_FALLBACK_MODEL`
+- `OPENROUTER_VISION_MODEL`
+- `OPENROUTER_SUMMARY_MODEL`
+- `OPENROUTER_TRANSLATE_MODEL`
+- `OPENROUTER_ANALYZE_MODEL`
+- `RECENT_MESSAGES_LIMIT`
+- `SUMMARY_UPDATE_MIN_MESSAGES`
+- `BACKGROUND_JOB_POLL_INTERVAL_SECONDS`
 
-Дополнительные лимиты и настройки:
+### Notes
 
-- `MAX_FILE_SIZE_MB`
-- `MAX_EXTRACTED_TEXT_CHARS`
-- `LONG_RESPONSE_AS_FILE_THRESHOLD`
-- `WHISPER_MODEL_SIZE`
-- `WHISPER_DEVICE`
-- `WHISPER_COMPUTE_TYPE`
-- `MAX_AUDIO_DURATION_SECONDS`
+- The bot is optimized for local polling-first usage.
+- `faster-whisper` may download model files on first run.
+- Vision behavior depends on the configured OpenRouter model set.
+- Background jobs use SQLite-backed queueing inside the same process.
+
+## Russian
+
+### Описание
+
+`Gemini Telegram Copilot` — это приватный Telegram-бот для личного использования или небольшого allowlist-сценария. Он подключает Telegram к AI-моделям через OpenRouter, хранит историю чатов в SQLite, сворачивает старый контекст в rolling summary memory и обрабатывает тяжелые мультимодальные задачи в фоне.
+
+### Ключевые возможности
+
+- allowlist-доступ для одного или нескольких пользователей и чатов
+- поддержка текста, документов, изображений, голосовых сообщений и аудиофайлов
+- фоновая очередь для тяжелой media-обработки
+- память в формате `summary + recent messages`
+- режимы работы: `chat`, `summarize`, `translate`, `analyze`
+- mode-aware routing по моделям с fallback
+- учет токенов и стоимости запросов
+- экспорт чата через `/export`
+- inline-меню и переключение режимов
+- ротация логов и автотесты
+
+### Команды
+
+- `/start` - старт и быстрые действия
+- `/help` - обзор возможностей
+- `/menu` - inline-меню
+- `/mode` - переключение режима
+- `/status` - лимиты и активная модель
+- `/settings` - подробные runtime-настройки
+- `/usage` - статистика по токенам и стоимости
+- `/clear` - очистка истории текущего чата
+- `/export` - экспорт истории чата
+
+### Режимы
+
+- `chat` - обычный режим ассистента
+- `summarize` - краткие саммари и action items
+- `translate` - режим перевода
+- `analyze` - структурный анализ и рекомендации
+
+### Установка
+
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+Copy-Item .env.example .env
+```
 
 ### Запуск
 
@@ -230,8 +156,25 @@ python -m src.main
 .\venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
+### Важные `.env`
+
+- `TELEGRAM_BOT_TOKEN`
+- `ALLOWED_TELEGRAM_USER_ID`
+- `ALLOWED_CHAT_ID`
+- `OPENROUTER_API_KEY`
+- `OPENROUTER_MODEL`
+- `OPENROUTER_FALLBACK_MODEL`
+- `OPENROUTER_VISION_MODEL`
+- `OPENROUTER_SUMMARY_MODEL`
+- `OPENROUTER_TRANSLATE_MODEL`
+- `OPENROUTER_ANALYZE_MODEL`
+- `RECENT_MESSAGES_LIMIT`
+- `SUMMARY_UPDATE_MIN_MESSAGES`
+- `BACKGROUND_JOB_POLL_INTERVAL_SECONDS`
+
 ### Примечания
 
-- Бот оптимизирован под локальный личный сценарий.
-- При первом запуске `faster-whisper` может скачать модель распознавания речи.
-- Поведение мультимодальности зависит от выбранной модели в OpenRouter.
+- Бот оптимизирован под локальный polling-first сценарий.
+- При первом запуске `faster-whisper` может скачать модель.
+- Поведение vision зависит от выбранного набора моделей OpenRouter.
+- Фоновые задачи работают через SQLite-backed очередь внутри того же процесса.

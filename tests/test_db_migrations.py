@@ -37,6 +37,12 @@ class DatabaseMigrationTests(unittest.TestCase):
             inspector = inspect(engine)
             columns = {column["name"] for column in inspector.get_columns("messages")}
             self.assertTrue({"prompt_tokens", "completion_tokens", "total_tokens", "cost"}.issubset(columns))
+            self.assertIn("background_jobs", inspector.get_table_names())
+            self.assertIn("chat_summaries", inspector.get_table_names())
+            self.assertIn("chat_settings", inspector.get_table_names())
+            self.assertIn("job_artifacts", inspector.get_table_names())
+            chat_settings_columns = {column["name"] for column in inspector.get_columns("chat_settings")}
+            self.assertIn("mode", chat_settings_columns)
 
             with engine.begin() as connection:
                 version = connection.execute(
